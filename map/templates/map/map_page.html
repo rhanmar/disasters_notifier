@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block title %}
+    Map Page
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Map Page</h2>
+
+
+<!--    Map conatiner-->
+<div id="map" style="width: 600px; height: 400px"></div>
+
+<!-- modal_point_create -->
+<div class="modal fade" id="modal_point_create" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+                <form id="create_point_form">
+    <div class="modal-content">
+        content
+      <div class="modal-header">
+          header
+        <h5 class="modal-title" id="modal_point_create_label">Create new point</h5>
+        <button type="button" id="test_x" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+<!--        TODO change form-->
+        Enter the name of point
+
+
+                  {% csrf_token %}
+                  {{ create_point_form.as_p }}
+   <input  name="coordinates" id="location_field" required>
+<!--        TODO  type="hidden"-->
+<!--          https://github.com/rhanmar/oi_projects_summer_2021/blob/0879ade24685b628624dce06698f8a0afd042000/camp-python-2021-find-me-develop/assets/map/js/event_reverse_geocode.js#L320-->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" id="modal_point_create_confirm_button" class="btn btn-primary">Confirm</button>
+      </div>
+    </div>
+                         </form>
+  </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+<!--Yandex map-->
+<script
+        src="https://api-maps.yandex.ru/2.1/?apikey=eca8121e-a2ed-4826-9369-464e4ba79cab&lang=ru_RU"
+        type="text/javascript">
+</script>
+
+<!--URLs-->
+<script>
+    const pointList = "{% url 'point-list' %}"
+</script>
+
+<!--Geocoder scripts-->
+<script src="{% static 'js/geocoder.js'%}" type="text/javascript"></script>
+
+
+{% endblock %}
+
