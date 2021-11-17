@@ -59,7 +59,7 @@ function init() {
             type: "POST",
             url: pointList,
             success: function (response) {
-                console.log($('#create_point_form'))
+                // console.log($('#create_point_form'))
                 $('#create_point_form')[0].reset()
                 $('#modal_point_create').modal("hide");
                 getPoints()  // renew map
@@ -104,11 +104,13 @@ function init() {
                     new ymaps.Placemark(
                         point['coordinates'].split(','),
                         {
-                            balloonContent: point['name']
+                            id:point['id'],
+                            balloonContent: point['name'] // TODO remove
                         },
                         {
-                            preset: 'islands#icon',
-                            iconColor: '#0095b6'
+                            preset: point['verified'] ? 'islands#greenDotIconWithCaption' : 'islands:icon',
+                            // islands#greenDotIconWithCaption
+                            // iconColor: '#0095b6'
                         }
                         )
                 )
@@ -120,6 +122,40 @@ function init() {
       alert("Not OK")
     };
 
+    $('#modal_point_detail_delete_button').click(function (e) {
+        // console.log('123123')
+        let id = $("#modal_point_detail_id").text()
+        // console.log(id)
+        // alert('delete')
+        let url = pointList + id
+        console.log(url)
+        $.ajax({
+            url: url,
+            type: "DELETE",
+            success: function (response) {
+                // alert("success");
+                $('#modal_point_detail').modal("hide");
+                getPoints()  // renew map
+            },
+            error: function (response) {
+                // TODO handler
+                alert("error!")
+            }
+        })
+    })
+
+    const showPointDetail = function (e) {
+        let target = e.get("target")
+        // console.log("!!showPointDetail")
+        // console.log(target.properties.get("id"))
+        // console.log(target.properties.get("balloonContent"))
+        $('#modal_point_detail_id').text(target.properties.get("id"))
+        // $('#modal_point_detail_id').val(target.properties.get("id"))
+        // $('#modal_point_detail_name').text(target.properties.get("balloonContent"))
+        $('#modal_point_detail').modal("show");
+    };
+
     myMap.events.add('click', createPoint);
+    myMap.events.add('balloonopen', showPointDetail);
     getPoints()
 }

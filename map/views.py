@@ -1,5 +1,6 @@
 from django.views import generic
 from map.forms import PointForm
+# from apps.users.forms import
 
 
 class MapPageView(generic.TemplateView):
@@ -15,5 +16,8 @@ class MainPageView(generic.TemplateView):
     template_name = "map/main_page.html"
 
 
+# class UserSignUpView(generic.CreateView):
+#     template_name = "users/sign_up.html"
+#     form_class =
 
 
