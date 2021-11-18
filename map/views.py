@@ -1,10 +1,12 @@
 from django.views import generic
 from map.forms import PointForm
-# from apps.users.forms import
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 
-class MapPageView(generic.TemplateView):
+class MapPageView(LoginRequiredMixin, generic.TemplateView):
     template_name = "map/map_page.html"
+    login_url = reverse_lazy("login")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -12,12 +14,11 @@ class MapPageView(generic.TemplateView):
         return context
 
 
-class MainPageView(generic.TemplateView):
-    template_name = "map/main_page.html"
+class MainPageView(LoginRequiredMixin, generic.TemplateView):
+    template_name = "map/main_page.html"  # TODO move templates dir
+    login_url = reverse_lazy("login")
 
-
-# class UserSignUpView(generic.CreateView):
-#     template_name = "users/sign_up.html"
-#     form_class =
-
-
+    def get_context_data(self, **kwargs):
+        print(self.request.user)
+        print(self.request.user.is_authenticated)
+        return super().get_context_data(**kwargs)
