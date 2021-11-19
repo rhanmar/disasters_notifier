@@ -96,18 +96,64 @@ function init() {
       })
     };
 
+
+    counter = 0
+
+    // Создание макета содержимого балуна.
+    // Макет создается с помощью фабрики макетов с помощью текстового шаблона.
+    BalloonContentLayout = ymaps.templateLayoutFactory.createClass(
+        '<div style="margin: 10px;">' +
+            '<b>{{ properties.id }}</b><br>' +
+            '<b>{{ properties.name }}</b><br>' +
+            // '<i id="count"></i> ' +
+            '<button id="counter-button"> Delete </button>' +
+        '</div>', {
+
+        // Переопределяем функцию build, чтобы при создании макета начинать
+        // слушать событие click на кнопке-счетчике.
+        build: function () {
+            // Сначала вызываем метод build родительского класса.
+            BalloonContentLayout.superclass.build.call(this);
+            // А затем выполняем дополнительные действия.
+            $('#counter-button').bind('click', this.onCounterClick);
+            $('#count').html(counter);
+        },
+
+        // Аналогично переопределяем функцию clear, чтобы снять
+        // прослушивание клика при удалении макета с карты.
+        clear: function () {
+            // Выполняем действия в обратном порядке - сначала снимаем слушателя,
+            // а потом вызываем метод clear родительского класса.
+            $('#counter-button').unbind('click', this.onCounterClick);
+            BalloonContentLayout.superclass.clear.call(this);
+        },
+
+        onCounterClick: function () {
+            alert('ajax delete')
+            showPointDetail()
+        }
+    });
+
+
+
+
     const showPoints = function (response) {
         clearMap()
+        console.log(response)
         response.forEach(
             point => {
                 myMap.geoObjects.add(
                     new ymaps.Placemark(
                         point['coordinates'].split(','),
                         {
-                            id:point['id'],
-                            balloonContent: point['name'] // TODO remove
+                            id:point["id"],
+                            name:point["name"]
+                            // balloonContent: point['name'], // TODO remove
+
                         },
                         {
+                            balloonContentLayout: BalloonContentLayout,
+                            balloonPanelMaxMapArea: 0,
                             preset: point['verified'] ? 'islands#greenDotIconWithCaption' : 'islands:icon',
                             // islands#greenDotIconWithCaption
                             // iconColor: '#0095b6'
@@ -149,6 +195,7 @@ function init() {
     })
 
     const showPointDetail = function (e) {
+        // console.log(e)
         let target = e.get("target")
         // console.log("!!showPointDetail")
         // console.log(target.properties.get("id"))
@@ -160,6 +207,6 @@ function init() {
     };
 
     myMap.events.add('click', createPoint);
-    myMap.events.add('balloonopen', showPointDetail);
+    // myMap.events.add('balloonopen', showPointDetail);  // TODO balloon or Modal Form
     getPoints()
 }
