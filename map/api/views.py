@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from map.models import Point
 from map.api.serializers import PointSerializer
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 
 class PointViewSet(viewsets.ModelViewSet):
@@ -8,3 +9,5 @@ class PointViewSet(viewsets.ModelViewSet):
 
     queryset = Point.objects.all()
     serializer_class = PointSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly,)
+

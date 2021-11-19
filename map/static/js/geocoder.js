@@ -123,15 +123,17 @@ function init() {
     };
 
     $('#modal_point_detail_delete_button').click(function (e) {
-        // console.log('123123')
-        let id = $("#modal_point_detail_id").text()
-        // console.log(id)
-        // alert('delete')
-        let url = pointList + id
+        let pointId = $("#modal_point_detail_id").text()
+        let url = pointList + pointId
+        console.log(e)
+        let csrfToken = e.target.ownerDocument.cookie.split("=")[1]
         console.log(url)
         $.ajax({
             url: url,
             type: "DELETE",
+            headers: {
+                "X-CSRFTOKEN": csrfToken,
+            },
             success: function (response) {
                 // alert("success");
                 $('#modal_point_detail').modal("hide");
@@ -140,6 +142,8 @@ function init() {
             error: function (response) {
                 // TODO handler
                 alert("error!")
+                alert(response)
+                console.log(response)
             }
         })
     })
