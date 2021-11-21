@@ -58,7 +58,7 @@
         content
       <div class="modal-header">
           header
-        <h5 class="modal-title" id="modal_point_detail_label">Create new point</h5>
+        <h5 class="modal-title" id="modal_point_detail_label">Point detail</h5>
         <button type="button" id="test_x" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -68,17 +68,54 @@
         There are some info about Point.
           To be continued...
 
-          <p id="modal_point_detail_name"></p>
-          <p id="modal_point_detail_id"></p>
+          NAME: <p id="modal_point_detail_name"></p>
+          ID: <p id="modal_point_detail_id"></p>
+          D LEVEL: <p id="modal_point_detail_disaster_level"></p>
+          D TYPE: <p id="modal_point_detail_disaster_type"></p>
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal_point_detail_delete_button">Delete</button>
-{#        <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>#}
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal_point_detail_edit_button">Edit</button>
+<!--          <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>-->
       </div>
     </div>
 
+  </div>
+
+</div>
+
+
+<!-- modal_point_edit -->
+<div class="modal fade" id="modal_point_edit" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="edit_point_form">
+    <div class="modal-content">
+        content
+      <div class="modal-header">
+          header
+        <h5 class="modal-title" id="modal_point_edit_label">Edit point</h5>
+        <button type="button" id="test_x" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        Enter the name of point
+
+
+                  {% csrf_token %}
+                  {{ create_point_form.as_p }}
+
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal_point_detail_confirm_button">Confirm</button>
+<!--          <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>-->
+      </div>
+    </div>
+    </form>
   </div>
 
 </div>

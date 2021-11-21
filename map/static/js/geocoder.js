@@ -97,42 +97,54 @@ function init() {
     };
 
 
-    counter = 0
 
-    // Создание макета содержимого балуна.
-    // Макет создается с помощью фабрики макетов с помощью текстового шаблона.
-    BalloonContentLayout = ymaps.templateLayoutFactory.createClass(
-        '<div style="margin: 10px;">' +
-            '<b>{{ properties.id }}</b><br>' +
-            '<b>{{ properties.name }}</b><br>' +
-            // '<i id="count"></i> ' +
-            '<button id="counter-button"> Delete </button>' +
-        '</div>', {
-
-        // Переопределяем функцию build, чтобы при создании макета начинать
-        // слушать событие click на кнопке-счетчике.
-        build: function () {
-            // Сначала вызываем метод build родительского класса.
-            BalloonContentLayout.superclass.build.call(this);
-            // А затем выполняем дополнительные действия.
-            $('#counter-button').bind('click', this.onCounterClick);
-            $('#count').html(counter);
-        },
-
-        // Аналогично переопределяем функцию clear, чтобы снять
-        // прослушивание клика при удалении макета с карты.
-        clear: function () {
-            // Выполняем действия в обратном порядке - сначала снимаем слушателя,
-            // а потом вызываем метод clear родительского класса.
-            $('#counter-button').unbind('click', this.onCounterClick);
-            BalloonContentLayout.superclass.clear.call(this);
-        },
-
-        onCounterClick: function () {
-            alert('ajax delete')
-            showPointDetail()
-        }
-    });
+    // // Создание макета содержимого балуна.
+    // // Макет создается с помощью фабрики макетов с помощью текстового шаблона.
+    // BalloonContentLayout = ymaps.templateLayoutFactory.createClass(
+    //     '<div style="margin: 10px;">' +
+    //         // '<b>{{ properties.id }}</b><br>' +
+    //         '<h4>name: {{ properties.name }}<br></h4>' +
+    //
+    //         '<p>disaster type: {{ properties.disasterType }}<br>' +
+    //         'disaster level: {{ properties.disasterLevel }}/5<br></p>' +
+    //         '<button id="edit-point-button" class="btn btn-info btn-sm"> Edit </button>\t\t\t' +
+    //         '<button id="delete-point-button" class="btn btn-danger btn-sm"> Delete </button><br>' +
+    //         '<p>created at: {{ properties.createdAt }}<br>' +
+    //         'last modified at: {{ properties.lastModifiedAt }}<br></p>' +
+    //     '</div>', {
+    //
+    //     // Переопределяем функцию build, чтобы при создании макета начинать
+    //     // слушать событие click на кнопке-счетчике.
+    //     build: function () {
+    //         // Сначала вызываем метод build родительского класса.
+    //         BalloonContentLayout.superclass.build.call(this);
+    //         // А затем выполняем дополнительные действия.
+    //         $('#delete-point-button').bind('click', this.onDeleteClick);
+    //         $('#edit-point-button').bind('click', this.onEditClick);
+    //
+    //     },
+    //
+    //     // Аналогично переопределяем функцию clear, чтобы снять
+    //     // прослушивание клика при удалении макета с карты.
+    //     clear: function () {
+    //         // Выполняем действия в обратном порядке - сначала снимаем слушателя,
+    //         // а потом вызываем метод clear родительского класса.
+    //         $('#delete-point-button').unbind('click', this.onDeleteClick);
+    //         $('#edit-point-button').unbind('click', this.onEditClick);
+    //         BalloonContentLayout.superclass.clear.call(this);
+    //     },
+    //
+    //     onDeleteClick: function () {
+    //         alert('ajax delete')
+    //         showPointDetail()
+    //     },
+    //
+    //     onEditClick: function () {
+    //         alert('ajax edit')
+    //         // $('#modal_point_detail').modal("show");
+    //         showPointDetail()
+    //     },
+    // });
 
 
 
@@ -146,14 +158,18 @@ function init() {
                     new ymaps.Placemark(
                         point['coordinates'].split(','),
                         {
-                            id:point["id"],
-                            name:point["name"]
-                            // balloonContent: point['name'], // TODO remove
+                            id: point["id"],
+                            name: point["name"],
+                            createdAt: point["created_at"],
+                            lastModifiedAt: point["modified_at"],
+                            disasterType: point["disaster_type"],
+                            disasterLevel: point["disaster_level"],
+                            balloonContent: "Point info is opened", // TODO remove
 
                         },
                         {
-                            balloonContentLayout: BalloonContentLayout,
-                            balloonPanelMaxMapArea: 0,
+                            // balloonContentLayout: BalloonContentLayout,
+                            // balloonPanelMaxMapArea: 0,
                             preset: point['verified'] ? 'islands#greenDotIconWithCaption' : 'islands:icon',
                             // islands#greenDotIconWithCaption
                             // iconColor: '#0095b6'
@@ -194,6 +210,33 @@ function init() {
         })
     })
 
+    $('#modal_point_detail_edit_button').click(function (e) {
+        let pointId = $("#modal_point_detail_id").text()
+        let url = pointList + pointId
+        console.log(url)
+        $.ajax({
+            url: url,
+            type: "GET",
+            success: function (response) {
+                alert("success");
+                console.log(response)
+                $("#edit_point_form input#id_name").val(response['name'])
+                $("#edit_point_form select#id_disaster_level").val(response['disaster_level'])
+                $("#edit_point_form input#id_verified").val(response['verified']) // TODO
+            },
+            error: function (response) {
+                // TODO handler
+                alert("error!")
+                alert(response)
+                console.log(response)
+            }
+
+        })
+        alert("edit");
+        $('#modal_point_detail').modal("hide");
+        $('#modal_point_edit').modal("show");
+    });
+
     const showPointDetail = function (e) {
         // console.log(e)
         let target = e.get("target")
@@ -201,12 +244,15 @@ function init() {
         // console.log(target.properties.get("id"))
         // console.log(target.properties.get("balloonContent"))
         $('#modal_point_detail_id').text(target.properties.get("id"))
+        $('#modal_point_detail_name').text(target.properties.get("name"))
+        $('#modal_point_detail_disaster_level').text(target.properties.get("disasterLevel"))
+        $('#modal_point_detail_disaster_level').text(target.properties.get("disasterType"))
         // $('#modal_point_detail_id').val(target.properties.get("id"))
         // $('#modal_point_detail_name').text(target.properties.get("balloonContent"))
         $('#modal_point_detail').modal("show");
     };
 
     myMap.events.add('click', createPoint);
-    // myMap.events.add('balloonopen', showPointDetail);  // TODO balloon or Modal Form
+    myMap.events.add('balloonopen', showPointDetail);  // TODO balloon or Modal Form
     getPoints()
 }
