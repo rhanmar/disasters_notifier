@@ -52,7 +52,7 @@ function init() {
 
     $('#create_point_form').submit(function (event) {
         event.preventDefault();
-        console.log('submitted');
+        console.log('submitted create'); // TODO REMOVE
         $.ajax({
             // data: $(this).serialize(), TODO
             data: $(this).serializeArray(),
@@ -78,7 +78,7 @@ function init() {
     };
 
     const createPoint = function (e) {
-        let coords = e.get('coords')
+        let coords = e.get('coords');
         $('#modal_point_create').modal("show");
         $("#location_field").val(coords);
     };
@@ -146,7 +146,31 @@ function init() {
     //     },
     // });
 
-
+    const definePointDisplay = function (point) {
+        //
+        // console.log(point)
+        // console.log(point["verified"])
+        // console.log('!!!!!')
+        // return "islands:icon"
+        if (point["verified"]) {
+            if (point["disaster_type"] == "fire") {
+                return "islands#redDotIcon"
+            }
+            if (point["disaster_type"] == "water") {
+                return "islands#darkBlueDotIcon"
+            }
+            if (point["disaster_type"] == "geo") {
+                return "islands#brownDotIcon"
+            }
+            if (point["disaster_type"] == "meteo") {
+                return "islands#grayDotIcon"
+            }
+        }
+        else {
+            return "islands:icon"
+            // return "islands#blueCircleDotIcon"
+        }
+    }
 
 
     const showPoints = function (response) {
@@ -161,16 +185,19 @@ function init() {
                             id: point["id"],
                             name: point["name"],
                             createdAt: point["created_at"],
-                            lastModifiedAt: point["modified_at"],
+                            modifiedAt: point["modified_at"],
                             disasterType: point["disaster_type"],
                             disasterLevel: point["disaster_level"],
+                            verified: point["verified"],
                             balloonContent: "Point info is opened", // TODO remove
 
                         },
                         {
                             // balloonContentLayout: BalloonContentLayout,
                             // balloonPanelMaxMapArea: 0,
-                            preset: point['verified'] ? 'islands#greenDotIconWithCaption' : 'islands:icon',
+
+                            // preset: point['verified'] ? 'islands#greenDotIconWithCaption' : 'islands:icon',
+                            preset: definePointDisplay(point)
                             // islands#greenDotIconWithCaption
                             // iconColor: '#0095b6'
                         }
@@ -208,7 +235,68 @@ function init() {
                 console.log(response)
             }
         })
-    })
+    });
+
+    $('#edit_point_form').submit(function (event) {
+        alert("ASDASDASAS")
+        let pointId = $("#modal_point_detail_id").text()
+        let url = pointList + pointId + '/'
+        let csrfToken = event.target.ownerDocument.cookie.split("=")[1]
+        event.preventDefault();
+        console.log("submitted edit") // TODO REMOVE
+        // console.log(pointId)
+        console.log('!!')
+        // console.log(url)
+        console.log($(this).serializeArray())
+        console.log($(this))
+        console.log($(this).serialize())
+
+        // let data = $(this).serializeArray()
+        // let newData = ""
+        // if (!("name" in data)) {
+        //     alert('not')
+        //     // data["name"] = 'off';
+        //     newData = $(this).serialize()
+        //     newData += "&verified=off"
+        // }
+        // else {
+        //     alert("IN")
+        //
+        // }
+        let data = $(this).serialize()
+        if (!data.includes("verified")) {
+            data += "&verified=off";
+        }
+        // if ($("edit_point_form input#id_verified").checked) {
+        //     alert("IS")
+        // }
+        // else {
+        //     alert("NOT")
+        // }
+        console.log('!!')
+        console.log(data)
+        // console.log(newData)
+        $.ajax({
+            // data: $(this).serializeArray(),
+            data: data,
+            type: "PATCH",
+            url: url,
+            headers: {
+                "X-CSRFTOKEN": csrfToken,
+            },
+            success: function (response) {
+                alert("success edit");
+                getPoints();
+                $('#modal_point_edit').modal("hide");
+            },
+            error: function (response, errors) {
+                alert("error edit")
+                alert(response.error)
+                console.log(errors)
+            }
+        })
+    });
+
 
     $('#modal_point_detail_edit_button').click(function (e) {
         let pointId = $("#modal_point_detail_id").text()
@@ -222,7 +310,19 @@ function init() {
                 console.log(response)
                 $("#edit_point_form input#id_name").val(response['name'])
                 $("#edit_point_form select#id_disaster_level").val(response['disaster_level'])
-                $("#edit_point_form input#id_verified").val(response['verified']) // TODO
+                // $("#edit_point_form input#id_verified").val(response['verified'])
+                $("#edit_point_form input#id_verified").prop("checked", response['verified'])
+                // console.log($("#edit_point_form ul#id_disaster_type").children())
+                console.log($("#edit_point_form input[name='disaster_type']"))
+
+                $("#edit_point_form input[name='disaster_type']").each(function() {
+                    if ($(this).val() == response["disaster_type"]) {
+                        console.log($(this).val())
+                        $(this).prop("checked", "checked")
+                    }
+
+                })
+
             },
             error: function (response) {
                 // TODO handler
@@ -246,10 +346,16 @@ function init() {
         $('#modal_point_detail_id').text(target.properties.get("id"))
         $('#modal_point_detail_name').text(target.properties.get("name"))
         $('#modal_point_detail_disaster_level').text(target.properties.get("disasterLevel"))
-        $('#modal_point_detail_disaster_level').text(target.properties.get("disasterType"))
+        $('#modal_point_detail_disaster_type').text(target.properties.get("disasterType"))
+        $('#modal_point_detail_verified').text(target.properties.get("verified"))
+        $('#modal_point_detail_created_at').text(target.properties.get("createdAt")) // TODO to footer
+        $('#modal_point_detail_modified_at').text(target.properties.get("modifiedAt")) // TODO to footer
+
+
         // $('#modal_point_detail_id').val(target.properties.get("id"))
         // $('#modal_point_detail_name').text(target.properties.get("balloonContent"))
         $('#modal_point_detail').modal("show");
+        target.balloon.close()
     };
 
     myMap.events.add('click', createPoint);

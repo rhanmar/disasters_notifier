@@ -65,13 +65,13 @@
       </div>
       <div class="modal-body">
 
-        There are some info about Point.
-          To be continued...
-
           NAME: <p id="modal_point_detail_name"></p>
           ID: <p id="modal_point_detail_id"></p>
           D LEVEL: <p id="modal_point_detail_disaster_level"></p>
           D TYPE: <p id="modal_point_detail_disaster_type"></p>
+          Verified: <p id="modal_point_detail_verified"></p>
+          CREATED: <p id="modal_point_detail_created_at"></p>
+          LAST MODIFIED: <p id="modal_point_detail_modified_at"></p>
 
       </div>
       <div class="modal-footer">
@@ -102,7 +102,7 @@
       </div>
       <div class="modal-body">
 
-        Enter the name of point
+        Edit point
 
 
                   {% csrf_token %}
@@ -111,8 +111,8 @@
       </div>
       <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal_point_detail_confirm_button">Confirm</button>
-<!--          <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>-->
+          <button type="submit" class="btn btn-primary" id="modal_point_edit_confirm_button">Confirm</button>
+{#          <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>#}
       </div>
     </div>
     </form>
