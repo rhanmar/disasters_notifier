@@ -53,6 +53,7 @@ function init() {
     $('#create_point_form').submit(function (event) {
         event.preventDefault();
         console.log('submitted create'); // TODO REMOVE
+        console.log($(this).serializeArray())
         $.ajax({
             // data: $(this).serialize(), TODO
             data: $(this).serializeArray(),

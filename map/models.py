@@ -1,5 +1,6 @@
 from django.db import models
 # from django.contrib.gis.db import models TODO
+from django.contrib.auth.models import User
 
 
 class Point(models.Model):
@@ -25,4 +26,8 @@ class Point(models.Model):
         choices=DISASTER_LEVELS,
         default=1,
     )
-    # owner TODO
+    created_by = models.ForeignKey(
+        User,
+        related_name="created_points",
+        on_delete=models.CASCADE,
+    )
