@@ -1,33 +1,47 @@
 import ipdb
+import rest_framework.permissions
 from rest_framework import viewsets
 from map.models import Point
-from map.api.serializers import PointSerializer
+from map.api import serializers
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.permissions import BasePermission
+from rest_framework.response import Response
+from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 
-# class IsSuperUser(BasePermission):
-#     def has_permission(self, request, view):
-#         return request.user.is_superuser
-
-    # def has_object_permission(self, request, view, obj):
-    #     return obj
-
-# class IsPointOwner(BasePermission):
-#     def has_object_permission(self, request, view, obj):
-#         return obj.owner == request.user
-
-class IsPointOwnerOrSuperuser(BasePermission):
+class IsPointOwnerOrSuperuser(BasePermission):  # TODO move to permissions dir
     def has_object_permission(self, request, view, obj):
-        return obj.created_by == request.user or request.user.is_superuser
+        return bool(
+            request.method in rest_framework.permissions.SAFE_METHODS or
+            (
+                obj.created_by == request.user or
+                request.user.is_superuser
+            )
+        )
 
 
 class PointViewSet(viewsets.ModelViewSet):
     """TODO"""
 
     queryset = Point.objects.all()
-    serializer_class = PointSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    # serializer_class = PointSerializer
+    serializer_class = serializers.PointCreateUpdateSerializerUser
+    permission_classes = (IsAuthenticatedOrReadOnly, IsPointOwnerOrSuperuser)
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['created_by']
+
+
+    def get_serializer_class(self):
+        if self.action == "list" or self.action == "retrieve":
+            return serializers.PointListRetrieveSerializer
+        if self.action == "create" and self.request.user.is_superuser:
+            return serializers.PointCreateUpdateSerializerAdmin
+        if self.action == "retrieve" and self.request.user.is_superuser:
+            return serializers.PointCreateUpdateSerializerAdmin
+        if (self.action == "update" or self.action == "partial_update") and self.request.user.is_superuser:
+            return serializers.PointCreateUpdateSerializerAdmin
+        return super().get_serializer_class()
 
     # def create(self, request, *args, **kwargs):
     #     print("???? CREATE")
@@ -37,3 +51,18 @@ class PointViewSet(viewsets.ModelViewSet):
     #     print(serializer.is_valid())
     #     print(serializer.errors)
     #     print(serializer.data)
+
+    # v2
+    # def create(self, request, *args, **kwargs):
+    #     import ipdb;
+    #     ipdb.set_trace()
+    #     data = request.data.dict()
+    #     data["created_by"] = request.user.id
+    #     serializer = self.get_serializer(data=data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)

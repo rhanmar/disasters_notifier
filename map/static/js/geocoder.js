@@ -190,6 +190,8 @@ function init() {
                             disasterType: point["disaster_type"],
                             disasterLevel: point["disaster_level"],
                             verified: point["verified"],
+                            createdBy: point["created_by"],
+                            createdByID: point["created_by.id"],
                             balloonContent: "Point info is opened", // TODO remove
 
                         },
@@ -341,7 +343,8 @@ function init() {
     const showPointDetail = function (e) {
         // console.log(e)
         let target = e.get("target")
-        // console.log("!!showPointDetail")
+        console.log("!!showPointDetail")
+        console.log(e)
         // console.log(target.properties.get("id"))
         // console.log(target.properties.get("balloonContent"))
         $('#modal_point_detail_id').text(target.properties.get("id"))
@@ -350,7 +353,19 @@ function init() {
         $('#modal_point_detail_disaster_type').text(target.properties.get("disasterType"))
         $('#modal_point_detail_verified').text(target.properties.get("verified"))
         $('#modal_point_detail_created_at').text(target.properties.get("createdAt")) // TODO to footer
-        $('#modal_point_detail_modified_at').text(target.properties.get("modifiedAt")) // TODO to footer
+        $('#modal_point_detail_created_by').text(target.properties.get("createdBy")) // TODO to footer
+        $('#modal_point_detail_created_by_id').text(target.properties.get("createdByID"))
+
+        console.log(currentUserID === target.properties.get("createdBy"))
+        console.log(isCurrentUserSuperUser)
+        if (!(currentUserID === target.properties.get("createdBy")) && (!isCurrentUserSuperUser)) {
+            $('#modal_point_detail_delete_button').hide()
+            $('#modal_point_detail_edit_button').hide()
+        }
+        else {
+            $('#modal_point_detail_delete_button').show()
+            $('#modal_point_detail_edit_button').show()
+        }
 
 
         // $('#modal_point_detail_id').val(target.properties.get("id"))

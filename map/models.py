@@ -17,8 +17,7 @@ class Point(models.Model):
     verified = models.BooleanField(default=False)
     disaster_type = models.CharField(
         max_length=80,
-        choices=DISASTER_TYPES
-        ,
+        choices=DISASTER_TYPES,
         default="fire",
     )
     disaster_level = models.CharField(

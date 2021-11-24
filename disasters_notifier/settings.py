@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'map.apps.MapConfig',
     'rest_framework',
     'django_extensions',
+    'django_filters',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

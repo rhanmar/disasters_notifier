@@ -2,7 +2,7 @@ from rest_framework import serializers
 from map.models import Point
 
 
-class PointSerializer(serializers.ModelSerializer):
+class PointListRetrieveSerializer(serializers.ModelSerializer):
     """TODO"""
 
     # created_at  TODO
@@ -13,11 +13,37 @@ class PointSerializer(serializers.ModelSerializer):
         model = Point
         fields = '__all__'  # TODO.
 
-    def create(self, validated_data):
-        validated_data["created_by"] = self.context["request"].user
-        print("!!!!")
-        return super().create(validated_data)
+    # def create(self, validated_data):
+    #     validated_data["created_by"] = self.context["request"].user
+    #     print("!!!!")
+    #     return super().create(validated_data)
 
 #      https://github.com/rhanmar/oi_projects_summer_2021/blob/main/camp-python-2021-find-me-develop/apps/map/api/serializers.py#L112
 # https://stackoverflow.com/questions/30203652/how-to-get-request-user-in-django-rest-framework-serializer
 # https://www.django-rest-framework.org/api-guide/serializers/#including-extra-context
+
+
+# class PointCreateSerializerAdmin(serializers.ModelSerializer):
+class PointCreateUpdateSerializerAdmin(serializers.ModelSerializer):
+    # created_by = serializers.IntegerField(source="created_by_id")
+
+    class Meta:
+        model = Point
+        fields = [
+            "id", "name", "coordinates",
+            "created_at", "modified_at",
+            "disaster_type", "disaster_level",
+            "verified",
+        ]
+
+
+class PointCreateUpdateSerializerUser(serializers.ModelSerializer):
+    # created_by = serializers.IntegerField(source="created_by_id")
+
+    class Meta:
+        model = Point
+        fields = [
+            "id", "name", "coordinates",
+            "created_at", "modified_at",
+            "disaster_type", "disaster_level",
+        ]
