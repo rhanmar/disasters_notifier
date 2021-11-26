@@ -1,0 +1,11 @@
+https://api.telegram.org/bot1932808440:AAEq_BLBIUtGrBMBa8tznQulhzapPdElVd4/getMe
+
+###
+
+https://api.telegram.org/bot1932808440:AAEq_BLBIUtGrBMBa8tznQulhzapPdElVd4/sendMessage?chat_id=@test_dima_channel&text=messages_from_dm
+
+###
+
+https://api.telegram.org/bot1932808440:AAEq_BLBIUtGrBMBa8tznQulhzapPdElVd4/getUpdates
+
+
