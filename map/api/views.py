@@ -1,12 +1,9 @@
-import ipdb
 import rest_framework.permissions
 from rest_framework import viewsets
 from map.models import Point
 from map.api import serializers
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.permissions import BasePermission
-from rest_framework.response import Response
-from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 
 

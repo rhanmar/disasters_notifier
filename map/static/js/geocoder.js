@@ -97,6 +97,17 @@ function init() {
       })
     };
 
+    const getCSRFTokenFromCookie = function(cookies) {
+        let csrfToken = null
+        let data = cookies.split(';');
+        data.forEach(element => {
+            if (element.replace(/\s/g, "").startsWith('csrftoken')) {
+                csrfToken = element.replace(/\s/g, "").split('=')[1]
+            }
+        })
+        return csrfToken
+    }
+
 
 
     // // Создание макета содержимого балуна.
@@ -218,8 +229,11 @@ function init() {
         let pointId = $("#modal_point_detail_id").text()
         let url = pointList + pointId
         console.log(e)
-        let csrfToken = e.target.ownerDocument.cookie.split("=")[1]
-        console.log(url)
+        let csrfToken = getCSRFTokenFromCookie(e.target.ownerDocument.cookie)
+        // console.log(csrfToken2)
+        // console.log(e.target.ownerDocument.cookie)
+        // console.log(csrfToken)
+        // console.log(url)
         $.ajax({
             url: url,
             type: "DELETE",
@@ -235,17 +249,20 @@ function init() {
                 // TODO handler
                 alert("error!")
                 alert(response)
-                console.log(response)
+                // console.log(response)
             }
         })
     });
 
     $('#edit_point_form').submit(function (event) {
-        alert("ASDASDASAS")
+        event.preventDefault();
         let pointId = $("#modal_point_detail_id").text()
         let url = pointList + pointId + '/'
-        let csrfToken = event.target.ownerDocument.cookie.split("=")[1]
-        event.preventDefault();
+        // let csrfToken = event.target.ownerDocument.cookie.split("=")[1]
+        let csrfToken = getCSRFTokenFromCookie(event.target.ownerDocument.cookie)
+        // alert(csrfToken)
+
+
         console.log("submitted edit") // TODO REMOVE
         // console.log(pointId)
         console.log('!!')
@@ -277,6 +294,7 @@ function init() {
         //     alert("NOT")
         // }
         console.log('!!')
+        console.log(csrfToken)
         console.log(data)
         // console.log(newData)
         $.ajax({
@@ -288,14 +306,17 @@ function init() {
                 "X-CSRFTOKEN": csrfToken,
             },
             success: function (response) {
-                alert("success edit");
+                // alert("success edit");
                 getPoints();
                 $('#modal_point_edit').modal("hide");
             },
             error: function (response, errors) {
                 alert("error edit")
                 alert(response.error)
-                console.log(errors)
+                // console.log('error edit')
+                // console.log(response)
+                // console.log(response.error)
+                // console.log(errors)
             }
         })
     });
@@ -309,14 +330,14 @@ function init() {
             url: url,
             type: "GET",
             success: function (response) {
-                alert("success");
-                console.log(response)
+                // alert("success");
+                // console.log(response)
                 $("#edit_point_form input#id_name").val(response['name'])
                 $("#edit_point_form select#id_disaster_level").val(response['disaster_level'])
                 // $("#edit_point_form input#id_verified").val(response['verified'])
                 $("#edit_point_form input#id_verified").prop("checked", response['verified'])
                 // console.log($("#edit_point_form ul#id_disaster_type").children())
-                console.log($("#edit_point_form input[name='disaster_type']"))
+                // console.log($("#edit_point_form input[name='disaster_type']"))
 
                 $("#edit_point_form input[name='disaster_type']").each(function() {
                     if ($(this).val() == response["disaster_type"]) {
