@@ -32,7 +32,9 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'map.apps.MapConfig',
+    'users.apps.UsersConfig',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_extensions',
     'django_filters',
     'django.contrib.admin',
@@ -128,6 +130,16 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy  # TODO
 LOGIN_REDIRECT_URL = reverse_lazy("main_page")
 LOGOUT_REDIRECT_URL = reverse_lazy("login")
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
+AUTH_USER_MODEL = 'users.User'

@@ -7,4 +7,5 @@ urlpatterns = [
     path('sign-up/', views.UserRegisterView.as_view(), name="sign_up"),
     path('login/', views.UserLoginView.as_view(), name="login"),
     path('logout/', LogoutView.as_view(), name="logout"),
+    path('link-to-telegram/', views.LinkToTelegramView.as_view(), name="link_to_telegram"),
 ]

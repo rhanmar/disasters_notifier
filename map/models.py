@@ -1,6 +1,7 @@
 from django.db import models
 # from django.contrib.gis.db import models TODO
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
+from users.models import User
 
 
 class Point(models.Model):

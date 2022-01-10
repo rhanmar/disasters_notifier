@@ -3,7 +3,7 @@ import logging
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHandler
-
+from users.models import User
 
 TOKEN = "1932808440:AAEq_BLBIUtGrBMBa8tznQulhzapPdElVd4"
 updater = Updater(token=TOKEN, use_context=True)
@@ -21,6 +21,15 @@ DISASTER_TYPES = [['fire', 'water', 'geo', 'meteo']]
 
 
 def start(update: Update, context: CallbackContext):
+    print('!!!!!')
+    print(update.message.from_user.id)
+    user_unique_code = update.message.text.split()[1]
+    user = User.objects.filter(unique_code=user_unique_code)
+    if user.exists():
+        user.first().telegram_id = update.message.from_user.id
+        user.first().save()
+    # import ipdb;
+    # ipdb.set_trace()
     # update.message.from_user.name
     # import ipdb; ipdb.set_trace()
     # context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
@@ -138,7 +147,7 @@ def send_disaster_level(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 
-conv_handler = ConversationHandler(
+conv_add_location_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
     states={
         1: [MessageHandler(Filters.location, send_location)],
@@ -150,8 +159,22 @@ conv_handler = ConversationHandler(
 )
 
 
+# conv_sign_up_handler = ConversationHandler(
+#
+# )
+
+def sign_up(update: Update, context: CallbackContext):
+    update.message.reply_text('Добро пожаловать в диалог регистрации!')
+
+
+def test(update: Update, context: CallbackContext):
+    import ipdb;ipdb.set_trace()
+    update.message.reply_text('YYYYYYY!')
+
 # HANDLERS
 start_handler = CommandHandler('start', start)
+test_handler = CommandHandler('test', test)
+# sign_up_handler = CommandHandler('sign up', sign_up)
 # new_handler = CommandHandler('new', new)
 # messages_location_handler = MessageHandler(Filters.location, locations)
 # messages_others_handler = MessageHandler(Filters.text & (~Filters.command), messages)
@@ -161,7 +184,9 @@ start_handler = CommandHandler('start', start)
 
 # ADD HANDLERS
 # dispatcher.add_handler(start_handler)
-dispatcher.add_handler(conv_handler)
+dispatcher.add_handler(conv_add_location_handler)
+dispatcher.add_handler(test_handler)
+# dispatcher.add_handler(conv_sign_up_handler)
 # dispatcher.add_handler(new_handler)
 # dispatcher.add_handler(messages_location_handler)
 # dispatcher.add_handler(messages_others_handler)
