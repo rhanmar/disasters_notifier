@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import generic
 from django.contrib.auth.forms import (
     AuthenticationForm,
@@ -25,14 +26,13 @@ class UserLoginView(SuccessMessageMixin, LoginView):
     success_message = "Logged in!"
 
 
-class LinkToTelegramView(SuccessMessageMixin, generic.TemplateView):
+class LinkToTelegramView(LoginRequiredMixin, SuccessMessageMixin, generic.TemplateView):  # TODO login required
     template_name = "users/link_to_telegram.html"
     success_url = reverse_lazy('main_page')
     success_message = "Successfully linked!"
 
     def get_context_data(self, **kwargs):
-        current_user_unique_code = self.request.user.unique_code
-        link = f"https://telegram.me/DimasUsernameBot?start={current_user_unique_code}"  # TODO
+        link = f"https://telegram.me/DimasUsernameBot?start={self.request.user.id}"  # TODO move to constant
         kwargs['link'] = link
         return super().get_context_data(**kwargs)
 
