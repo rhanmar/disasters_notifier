@@ -13,8 +13,8 @@ class Point(models.Model):
     name = models.CharField(max_length=120)
     coordinates = models.CharField(max_length=80)
     # coordinates = models.PointField() TODO
-    created_at = models.DateTimeField(auto_now_add=True)
-    modified_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # TODO create TimeStampMixin
+    modified_at = models.DateTimeField(auto_now=True)  # TODO create TimeStampMixin
     verified = models.BooleanField(default=False)
     disaster_type = models.CharField(
         max_length=80,
