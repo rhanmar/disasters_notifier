@@ -1,3 +1,6 @@
+build:
+	docker-compose build
+
 up:
 	docker-compose up
 
@@ -7,14 +10,20 @@ down:
 attach:
 	docker attach docker attach disasters_notifier_web_1
 
-run_tests:
+tests:
 	docker exec -it disasters_notifier_web_1 python ./manage.py test
 
-makemigrations:
+make_migrations:
 	docker exec -it disasters_notifier_web_1 python ./manage.py makemigrations
 
 migrate:
 	docker exec -it disasters_notifier_web_1 python ./manage.py migrate
+
+show_migrations:
+	docker exec -it disasters_notifier_web_1 python ./manage.py showmigrations
+
+show_urls:
+	docker exec -it disasters_notifier_web_1 python ./manage.py show_urls
 
 exec_web:
 	docker exec -it disasters_notifier_web_1 /bin/bash
@@ -28,5 +37,9 @@ linters:
 	docker exec -it disasters_notifier_db_1 flake8 map/
 	docker exec -it disasters_notifier_db_1 flake8 users/
 
+run_telegram_bot:
+	docker exec -it disasters_notifier_web_1 python ./manage.py run_tg_bot
 
+create_superuser:
+	docker exec -it disasters_notifier_web_1 python ./manage.py createsuperuser
 

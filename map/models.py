@@ -1,33 +1,94 @@
 from django.db import models
-# from django.contrib.gis.db import models TODO
-# from django.contrib.auth.models import User
 from users.models import User
+from django.utils.translation import gettext as _
 
 
-class Point(models.Model):
+class DisasterTypes:
+     FIRE = "FIRE"
+     WATER = "WATER"
+     GEO = "GEO"
+     METEO = "METEO"
+     UNKNOWN = "UNKNOWN"
+
+     RESOLVER = {
+        FIRE: _("Пожар"),
+        WATER: _("Гидрологический характер"),
+        GEO: _("Геологический характер"),
+        METEO: _("Метеорологический характер"),
+     }
+     CHOICES = RESOLVER.items()
+
+# class DisasterTypes:
+
+
+class TimestampedMixin(models.Model):
+    """TODO"""
+    created_at = models.DateTimeField(
+        verbose_name=_('Дата создания'),
+        auto_now_add=True,
+        # null=False,
+        # blank=True,
+
+    )
+    updated_at = models.DateTimeField(
+        verbose_name=_('Дата изменения'),
+        auto_now=True,
+        # null=False,
+        # blank=True,
+    )
+
+    class Meta:
+        abstract = True
+
+
+
+
+class Point(TimestampedMixin, models.Model):
     """Model for map Point"""
 
-    DISASTER_LEVELS = [(1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
-    DISASTER_TYPES = [("fire", "fire"), ("water", "water"), ("geo", "geo"), ("meteo", "meteo")]
+    DISASTER_LEVELS = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
+    # DISASTER_TYPES = [("fire", "fire"), ("water", "water"), ("geo", "geo"), ("meteo", "meteo")]
 
-    name = models.CharField(max_length=120)
-    coordinates = models.CharField(max_length=80)
-    # coordinates = models.PointField() TODO
-    created_at = models.DateTimeField(auto_now_add=True)  # TODO create TimeStampMixin
-    modified_at = models.DateTimeField(auto_now=True)  # TODO create TimeStampMixin
-    verified = models.BooleanField(default=False)
+    name = models.CharField(
+        verbose_name=_('Наименование точки'),
+        max_length=120
+    )
+    description = models.CharField(
+        verbose_name=_('Описание точки'),
+        max_length = 360,
+        blank=True
+    )
+    coordinates = models.CharField(
+        verbose_name=_("Коордиаты точки"),
+        max_length=80
+    )
+    # created_at = models.DateTimeField(auto_now_add=True)
+    # modified_at = models.DateTimeField(auto_now=True)
+    is_verified = models.BooleanField(
+       verbose_name=_("Подтверждена ли точка"),
+        default=False,
+        help_text=_(
+            "Подтверждена ли точка уполномоченным лицом или организацией. Значение по умолчанию: не подтверждено"
+        )
+    )
     disaster_type = models.CharField(
+        verbose_name=_("Тип стихийного бедствия"),
         max_length=80,
-        choices=DISASTER_TYPES,
-        default="fire",
+        choices=DisasterTypes.CHOICES,
+        default=DisasterTypes.UNKNOWN,
     )
     disaster_level = models.CharField(
+        verbose_name=_("Уровень опасности стихийного бедствия"),
         max_length=1,
         choices=DISASTER_LEVELS,
-        default=1,
+        default=0,
     )
     created_by = models.ForeignKey(
-        User,
+        verbose_name=_("Автор точки"),
+        to=User,
         related_name="created_points",
         on_delete=models.CASCADE,
     )
+
+    def __str__(self):
+        return f"{self.name} - {self.disaster_type} - {self.disaster_level} - {self.is_verified}"
