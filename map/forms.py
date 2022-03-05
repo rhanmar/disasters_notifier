@@ -9,23 +9,49 @@ class PointForm(forms.ModelForm):
 
     class Meta:
         model = Point
-        fields = ["name", "disaster_level", "is_verified"]
+        fields = ["name", "disaster_level", "is_verified", "description"]
+        help_texts = {
+            "is_verified": None,
+        }
 
 
 class PointAdminForm(forms.ModelForm):
     """TODO"""
 
-    disaster_type = forms.ChoiceField(widget=forms.RadioSelect, choices=DisasterTypes.CHOICES)
+    disaster_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=DisasterTypes.CHOICES,
+        label="Тип стихийного бедствия"
+    )
 
     class Meta:
         model = Point
-        fields = ["name", "disaster_level", "is_verified"]
+        fields = [
+            "name",
+            "description",
+            "disaster_level",
+            "is_verified",
+        ]
+        help_texts = {
+            "is_verified": None,
+        }
 
 
 class PointUserOwnerForm(forms.ModelForm):
     """TODO"""
-    disaster_type = forms.ChoiceField(widget=forms.RadioSelect, choices=DisasterTypes.CHOICES)
+    disaster_type = forms.ChoiceField(
+        widget=forms.RadioSelect,
+        choices=DisasterTypes.CHOICES,
+        label="Тип стихийного бедствия"
+    )
 
     class Meta:
         model = Point
-        fields = ["name", "disaster_level"]
+        fields = [
+            "name",
+            "description",
+            "disaster_level",
+        ]
+        help_texts = {
+            "is_verified": None,
+        }

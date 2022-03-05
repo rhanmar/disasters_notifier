@@ -9,32 +9,27 @@
 
 {% block content %}
 
-<h2>Map Page</h2>
-{{ user }}
-{{ user.id }}
-{{ user.is_superuser }}
+{#<h2>Map Page</h2>#}
 
-<!--    Map conatiner-->
-<div id="map" style="width: 100%; height:800px"></div>
+<!--    Map container-->
+    <div class="d-flex justify-content-center mt-3 mb-4">
+        <div id="map" style="width: 98%; height: 85vh" ></div>
+    </div>
+
 
 <!-- modal_point_create -->
 <div class="modal fade" id="modal_point_create" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog" role="document">
                 <form id="create_point_form">
     <div class="modal-content">
-        content
       <div class="modal-header">
-          header
-        <h5 class="modal-title" id="modal_point_create_label">Create new point</h5>
+        <h4 class="modal-title" id="modal_point_create_label">Добавить новую точку</h4>
         <button type="button" id="test_x" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
 <!--        TODO change form-->
-        Enter the name of point
-
-
                   {% csrf_token %}
                   {% if user.is_superuser %}
 {#                  {{ create_point_form.as_p }}#}
@@ -42,13 +37,13 @@
                   {% else %}
                     {{ point_form_owner.as_p }}
                   {% endif %}
-   <input  name="coordinates" id="location_field" required>
+   <input  name="coordinates" id="location_field" required hidden>
 <!--        TODO  type="hidden"-->
 <!--          https://github.com/rhanmar/oi_projects_summer_2021/blob/0879ade24685b628624dce06698f8a0afd042000/camp-python-2021-find-me-develop/assets/map/js/event_reverse_geocode.js#L320-->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="submit" id="modal_point_create_confirm_button" class="btn btn-primary">Confirm</button>
+        <button type="button" class="btn btn-light" data-dismiss="modal">Закрыть</button>
+        <button type="submit" id="modal_point_create_confirm_button" class="btn btn-success">Подтвердить</button>
       </div>
     </div>
                          </form>
@@ -62,25 +57,24 @@
   <div class="modal-dialog" role="document">
 
     <div class="modal-content">
-        content
       <div class="modal-header">
-          header
-        <h5 class="modal-title" id="modal_point_detail_label">Point detail</h5>
+        <h5 class="modal-title" id="modal_point_detail_label">Информация о точке</h5>
         <button type="button" id="test_x" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
 
-          NAME: <p id="modal_point_detail_name"></p>
-          ID: <p id="modal_point_detail_id"></p>
-          D LEVEL: <p id="modal_point_detail_disaster_level"></p>
-          D TYPE: <p id="modal_point_detail_disaster_type"></p>
-          Verified: <p id="modal_point_detail_verified"></p>
-          CREATED: <p id="modal_point_detail_created_at"></p>
-          LAST MODIFIED: <p id="modal_point_detail_modified_at"></p>
-          Created by: <p id="modal_point_detail_created_by"></p>
-          Created by ID: <p id="modal_point_detail_created_by_id"></p>
+          Название: <p id="modal_point_detail_name"></p>
+          Описание: <p id="modal_point_detail_description"></p>
+          ID: <p id="modal_point_detail_id" hidden></p>
+          Уровень опасности: <p id="modal_point_detail_disaster_level"></p>
+          Тип стихийного бедствия: <p id="modal_point_detail_translated_disaster_type"></p>
+          Подтверждено ли: <p id="modal_point_detail_is_verified"></p>
+          Создано: <p id="modal_point_detail_created_at"></p>
+          Изменено: <p id="modal_point_detail_modified_at"></p>
+          Автор: <p id="modal_point_detail_created_by"></p>
+{#          Created by ID: <p id="modal_point_detail_created_by_id"></p>#}
 
 
       </div>
@@ -89,12 +83,9 @@
 {#            ????HUHU#}
 {#          {% endblock %}#}
 
-          {% if user.is_superuser %}
-              !!!!HEHE
-          {% endif %}
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal_point_detail_delete_button">Delete</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" id="modal_point_detail_edit_button">Edit</button>
+          <button type="button" class="btn btn-light" data-dismiss="modal">Закрыть</button>
+          <button type="button" class="btn btn-danger" data-dismiss="modal" id="modal_point_detail_delete_button">Удалить</button>
+          <button type="button" class="btn btn-primary" data-dismiss="modal" id="modal_point_detail_edit_button">Изменить</button>
 <!--          <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>-->
       </div>
     </div>
@@ -109,31 +100,23 @@
   <div class="modal-dialog" role="document">
     <form id="edit_point_form">
     <div class="modal-content">
-        content
       <div class="modal-header">
-          header
-        <h5 class="modal-title" id="modal_point_edit_label">Edit point</h5>
+        <h5 class="modal-title" id="modal_point_edit_label">Изменить точку</h5>
         <button type="button" id="test_x" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-
-        Edit point
-
-
-                  {% csrf_token %}
-                  {% if user.is_superuser %}
-{#                  {{ create_point_form.as_p }}#}
-                    {{ point_form_admin.as_p }}
-                  {% else %}
-                    {{ point_form_owner.as_p }}
-                  {% endif %}
-
+        {% csrf_token %}
+        {% if user.is_superuser %}
+            {{ point_form_admin.as_p }}
+        {% else %}
+            {{ point_form_owner.as_p }}
+        {% endif %}
       </div>
       <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary" id="modal_point_edit_confirm_button">Confirm</button>
+          <button type="button" class="btn btn-light" data-dismiss="modal">Закрыть</button>
+          <button type="submit" class="btn btn-success" id="modal_point_edit_confirm_button">Подтвердить</button>
 {#          <button type="submit" id="modal_point_detail_confirm_button" class="btn btn-primary">Confirm</button>#}
       </div>
     </div>

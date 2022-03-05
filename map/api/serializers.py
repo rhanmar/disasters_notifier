@@ -8,6 +8,8 @@ class PointListRetrieveSerializer(serializers.ModelSerializer):
     # created_at  TODO
     # modified_at TODO
     created_by = serializers.IntegerField(source="created_by_id")
+    translated_disaster_type = serializers.CharField(source="get_translated_disaster_type")
+    # is_verified = serializers.CharField(source="get_translated_is_verified")
 
     class Meta:
         model = Point
@@ -30,10 +32,15 @@ class PointCreateUpdateSerializerAdmin(serializers.ModelSerializer):
     class Meta:
         model = Point
         fields = [
-            "id", "name", "coordinates",
-            "created_at", "modified_at",
-            "disaster_type", "disaster_level",
-            "verified",
+            "id",
+            "name",
+            "description",
+            "coordinates",
+            "created_at",
+            "updated_at",
+            "disaster_type",
+            "disaster_level",
+            "is_verified",
         ]
 
 
@@ -43,7 +50,12 @@ class PointCreateUpdateSerializerUser(serializers.ModelSerializer):
     class Meta:
         model = Point
         fields = [
-            "id", "name", "coordinates",
-            "created_at", "modified_at",
-            "disaster_type", "disaster_level",
+            "id",
+            "name",
+            "description",
+            "coordinates",
+            "created_at",
+            "updated_at",
+            "disaster_type",
+            "disaster_level",
         ]

@@ -18,29 +18,20 @@ class DisasterTypes:
      }
      CHOICES = RESOLVER.items()
 
-# class DisasterTypes:
-
 
 class TimestampedMixin(models.Model):
     """TODO"""
     created_at = models.DateTimeField(
         verbose_name=_('Дата создания'),
         auto_now_add=True,
-        # null=False,
-        # blank=True,
-
     )
     updated_at = models.DateTimeField(
         verbose_name=_('Дата изменения'),
         auto_now=True,
-        # null=False,
-        # blank=True,
     )
 
     class Meta:
         abstract = True
-
-
 
 
 class Point(TimestampedMixin, models.Model):
@@ -89,6 +80,16 @@ class Point(TimestampedMixin, models.Model):
         related_name="created_points",
         on_delete=models.CASCADE,
     )
+
+    @property
+    def get_translated_disaster_type(self):
+        return DisasterTypes.RESOLVER[self.disaster_type]
+
+    @property
+    def get_translated_is_verified(self):
+        if self.is_verified:
+            return "Подтверждено"
+        return  "Не подтверждено"
 
     def __str__(self):
         return f"{self.name} - {self.disaster_type} - {self.disaster_level} - {self.is_verified}"

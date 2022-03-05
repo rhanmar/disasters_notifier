@@ -1,9 +1,6 @@
-h2 {
-    color: blue;
-}
-ul {
-    color: red;
+#mainPageInfo {
+    text-align: center;
 }
 body {
-    background-color: #FDFBF8;
+    background-color: #FBFBFF;
 }

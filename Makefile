@@ -43,3 +43,6 @@ run_telegram_bot:
 create_superuser:
 	docker exec -it disasters_notifier_web_1 python ./manage.py createsuperuser
 
+shell:
+	docker exec -it disasters_notifier_web_1 python ./manage.py shell
+

@@ -164,17 +164,17 @@ function init() {
         // console.log(point["verified"])
         // console.log('!!!!!')
         // return "islands:icon"
-        if (point["verified"]) {
-            if (point["disaster_type"] == "fire") {
+        if (point["is_verified"]) {
+            if (point["disaster_type"] == "FIRE") {
                 return "islands#redDotIcon"
             }
-            if (point["disaster_type"] == "water") {
+            if (point["disaster_type"] == "WATER") {
                 return "islands#darkBlueDotIcon"
             }
-            if (point["disaster_type"] == "geo") {
+            if (point["disaster_type"] == "GEO") {
                 return "islands#brownDotIcon"
             }
-            if (point["disaster_type"] == "meteo") {
+            if (point["disaster_type"] == "METEO") {
                 return "islands#grayDotIcon"
             }
         }
@@ -196,11 +196,13 @@ function init() {
                         {
                             id: point["id"],
                             name: point["name"],
+                            description: point["description"],
                             createdAt: point["created_at"],
                             modifiedAt: point["modified_at"],
                             disasterType: point["disaster_type"],
+                            translatedDisasterType: point["translated_disaster_type"],
                             disasterLevel: point["disaster_level"],
-                            verified: point["verified"],
+                            is_verified: point["is_verified"],
                             createdBy: point["created_by"],
                             createdByID: point["created_by.id"],
                             balloonContent: "Point info is opened", // TODO remove
@@ -284,8 +286,8 @@ function init() {
         //
         // }
         let data = $(this).serialize()
-        if (!data.includes("verified")) {
-            data += "&verified=off";
+        if (!data.includes("is_verified")) {
+            data += "&is_verified=off";
         }
         // if ($("edit_point_form input#id_verified").checked) {
         //     alert("IS")
@@ -331,11 +333,12 @@ function init() {
             type: "GET",
             success: function (response) {
                 // alert("success");
-                // console.log(response)
+                console.log(response)
                 $("#edit_point_form input#id_name").val(response['name'])
                 $("#edit_point_form select#id_disaster_level").val(response['disaster_level'])
+                $("#edit_point_form input#id_description").val(response['description'])
                 // $("#edit_point_form input#id_verified").val(response['verified'])
-                $("#edit_point_form input#id_verified").prop("checked", response['verified'])
+                $("#edit_point_form input#id_is_verified").prop("checked", response['is_verified'])
                 // console.log($("#edit_point_form ul#id_disaster_type").children())
                 // console.log($("#edit_point_form input[name='disaster_type']"))
 
@@ -366,13 +369,17 @@ function init() {
         let target = e.get("target")
         console.log("!!showPointDetail")
         console.log(e)
+        console.log('target!!')
+        console.log(target)
         // console.log(target.properties.get("id"))
         // console.log(target.properties.get("balloonContent"))
         $('#modal_point_detail_id').text(target.properties.get("id"))
         $('#modal_point_detail_name').text(target.properties.get("name"))
+        $('#modal_point_detail_description').text(target.properties.get("description"))
         $('#modal_point_detail_disaster_level').text(target.properties.get("disasterLevel"))
         $('#modal_point_detail_disaster_type').text(target.properties.get("disasterType"))
-        $('#modal_point_detail_verified').text(target.properties.get("verified"))
+        $('#modal_point_detail_translated_disaster_type').text(target.properties.get("translatedDisasterType"))
+        $('#modal_point_detail_is_verified').text(target.properties.get("is_verified"))
         $('#modal_point_detail_created_at').text(target.properties.get("createdAt")) // TODO to footer
         $('#modal_point_detail_created_by').text(target.properties.get("createdBy")) // TODO to footer
         $('#modal_point_detail_created_by_id').text(target.properties.get("createdByID"))
