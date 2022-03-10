@@ -1,6 +1,26 @@
 #mainPageInfo {
     text-align: center;
 }
+
 body {
     background-color: #FBFBFF;
+}
+
+#login_form {
+    text-align: center;
+    border: 5px solid #BCFFF0;
+    background-color: #E8FFFA;
+    padding: 30px;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal_detail_form_field {
+    background-color: #F9F9FF;
+}
+
+.modal_detail_form_label {
+    background-color: #ECECFF;
 }

@@ -198,7 +198,7 @@ function init() {
                             name: point["name"],
                             description: point["description"],
                             createdAt: point["created_at"],
-                            modifiedAt: point["modified_at"],
+                            modifiedAt: point["updated_at"],
                             disasterType: point["disaster_type"],
                             translatedDisasterType: point["translated_disaster_type"],
                             disasterLevel: point["disaster_level"],
@@ -364,6 +364,20 @@ function init() {
         $('#modal_point_edit').modal("show");
     });
 
+    const parseDjangoTimeString = function (datetime) {
+        splitedDatetime = datetime.split('T')
+        date = splitedDatetime[0]
+        splitedDate = date.split('-')
+        parsedDate = `${splitedDate[2]}.${splitedDate[1]}.${splitedDate[0]}`
+
+        time = splitedDatetime[1]
+        splitedTime = time.split('.')[0]
+        splitedTime = splitedTime.split(':')
+        parsedTime = splitedTime.join(':')
+
+        return parsedDate + ' ' + parsedTime
+    }
+
     const showPointDetail = function (e) {
         // console.log(e)
         let target = e.get("target")
@@ -371,6 +385,14 @@ function init() {
         console.log(e)
         console.log('target!!')
         console.log(target)
+        createdTime = parseDjangoTimeString(target.properties.get("createdAt"))
+        modifiedTime = parseDjangoTimeString(target.properties.get("modifiedAt"))
+        OKChar = '&#10003'
+        XChar = '&#10005'
+        is_verified_display = target.properties.get("is_verified") ? OKChar : XChar
+        console.log('ZXC')
+        // created_at_time = target.properties.get("modifiedAt").split('T')
+
         // console.log(target.properties.get("id"))
         // console.log(target.properties.get("balloonContent"))
         $('#modal_point_detail_id').text(target.properties.get("id"))
@@ -379,9 +401,13 @@ function init() {
         $('#modal_point_detail_disaster_level').text(target.properties.get("disasterLevel"))
         $('#modal_point_detail_disaster_type').text(target.properties.get("disasterType"))
         $('#modal_point_detail_translated_disaster_type').text(target.properties.get("translatedDisasterType"))
-        $('#modal_point_detail_is_verified').text(target.properties.get("is_verified"))
-        $('#modal_point_detail_created_at').text(target.properties.get("createdAt")) // TODO to footer
+        // $('#modal_point_detail_is_verified').text(target.properties.get("is_verified"))
+        $('#modal_point_detail_is_verified').text(is_verified_display)
+        // $('#modal_point_detail_created_at').text(target.properties.get("createdAt")) // TODO to footer
+        $('#modal_point_detail_created_at').text(createdTime) // TODO to footer
         $('#modal_point_detail_created_by').text(target.properties.get("createdBy")) // TODO to footer
+        // $('#modal_point_detail_modified_at').text(target.properties.get("modifiedAt")) // TODO to footer
+        $('#modal_point_detail_modified_at').text(modifiedTime) // TODO to footer
         $('#modal_point_detail_created_by_id').text(target.properties.get("createdByID"))
 
         console.log(currentUserID === target.properties.get("createdBy"))

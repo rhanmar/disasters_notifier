@@ -68,9 +68,8 @@ class Point(TimestampedMixin, models.Model):
         choices=DisasterTypes.CHOICES,
         default=DisasterTypes.UNKNOWN,
     )
-    disaster_level = models.CharField(
+    disaster_level = models.SmallIntegerField(
         verbose_name=_("Уровень опасности стихийного бедствия"),
-        max_length=1,
         choices=DISASTER_LEVELS,
         default=0,
     )
