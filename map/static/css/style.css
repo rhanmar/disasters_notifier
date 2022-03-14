@@ -8,8 +8,8 @@ body {
 
 #login_form {
     text-align: center;
-    border: 5px solid #BCFFF0;
-    background-color: #E8FFFA;
+    border: 5px solid #ccdcff;
+    background-color: #e0e8ff;
     padding: 30px;
     position: fixed;
     top: 30%;
@@ -19,8 +19,25 @@ body {
 
 .modal_detail_form_field {
     background-color: #F9F9FF;
+    margin-bottom: 10px;
 }
 
 .modal_detail_form_label {
     background-color: #ECECFF;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+#modal_form_footer {
+    background-color: #f8f8ff;
+    padding-left: 16px;
+}
+
+#telegram_link_block {
+    margin-top: 30px;
+    text-align: center;
+}
+
+#navbar_current_username {
+    color: blue;
 }

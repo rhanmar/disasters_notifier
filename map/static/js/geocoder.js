@@ -8,46 +8,46 @@ function init() {
         // Порядок по умолчанию: «широта, долгота».
         // Чтобы не определять координаты центра карты вручную,
         // воспользуйтесь инструментом Определение координат.
-        center: [55.76, 37.64],
+        center: [56.016, 92.87],
         // Уровень масштабирования. Допустимые значения:
         // от 0 (весь мир) до 19.
-        zoom: 7
+        zoom: 12
     });
 
-    var myGeoObject = new ymaps.GeoObject({ // REMOVE LATER TODO
-        // Описание геометрии.
-        geometry: {
-            type: "Point",
-            coordinates: [55.8, 37.8]
-        },
-        // Свойства.
-        properties: {
-            // Контент метки.
-            iconContent: 'Я тащусь',
-            hintContent: 'Ну давай уже тащи'
-        }
-    }, {
-        // Опции.
-        // Иконка метки будет растягиваться под размер ее содержимого.
-        preset: 'islands#blackStretchyIcon',
-        // Метку можно перемещать.
-        draggable: true
-    })
+    // var myGeoObject = new ymaps.GeoObject({ // REMOVE LATER TODO
+    //     // Описание геометрии.
+    //     geometry: {
+    //         type: "Point",
+    //         coordinates: [55.8, 37.8]
+    //     },
+    //     // Свойства.
+    //     properties: {
+    //         // Контент метки.
+    //         iconContent: 'Я тащусь',
+    //         hintContent: 'Ну давай уже тащи'
+    //     }
+    // }, {
+    //     // Опции.
+    //     // Иконка метки будет растягиваться под размер ее содержимого.
+    //     preset: 'islands#blackStretchyIcon',
+    //     // Метку можно перемещать.
+    //     draggable: true
+    // })
 
-    myMap.geoObjects
-        .add(myGeoObject)
-        .add(new ymaps.Placemark([55.684758, 37.738521], { // REMOVE LATER TODO
-            balloonContent: 'цвет <strong>воды пляжа бонди</strong>'
-        }, {
-            preset: 'islands#icon',
-            iconColor: '#0095b6'
-        }))
-        .add(new ymaps.Placemark([55.833436, 37.715175], { // REMOVE LATER
-            balloonContent: '<strong>серобуромалиновый</strong> цвет'
-        }, {
-            preset: 'islands#dotIcon',
-            iconColor: '#735184'
-        }))
+    // myMap.geoObjects
+    //     .add(myGeoObject)
+    //     .add(new ymaps.Placemark([55.684758, 37.738521], { // REMOVE LATER TODO
+    //         balloonContent: 'цвет <strong>воды пляжа бонди</strong>'
+    //     }, {
+    //         preset: 'islands#icon',
+    //         iconColor: '#0095b6'
+    //     }))
+    //     .add(new ymaps.Placemark([55.833436, 37.715175], { // REMOVE LATER
+    //         balloonContent: '<strong>серобуромалиновый</strong> цвет'
+    //     }, {
+    //         preset: 'islands#dotIcon',
+    //         iconColor: '#735184'
+    //     }))
 
 
     $('#create_point_form').submit(function (event) {
@@ -387,9 +387,12 @@ function init() {
         console.log(target)
         createdTime = parseDjangoTimeString(target.properties.get("createdAt"))
         modifiedTime = parseDjangoTimeString(target.properties.get("modifiedAt"))
-        OKChar = '&#10003'
-        XChar = '&#10005'
-        is_verified_display = target.properties.get("is_verified") ? OKChar : XChar
+        // OKChar = '✓' //'&#10003'
+        // XChar = '✕' //'&#10005'
+        // ConfirmYeslabel =
+        // is_verified_display = target.properties.get("is_verified") ? OKChar : XChar
+        is_verified_label = target.properties.get("is_verified") ? "Подтверждено" : "Не подтверждено"
+        is_verified_style = target.properties.get("is_verified") ? ['color', 'green'] : ['color', 'red']
         console.log('ZXC')
         // created_at_time = target.properties.get("modifiedAt").split('T')
 
@@ -401,8 +404,11 @@ function init() {
         $('#modal_point_detail_disaster_level').text(target.properties.get("disasterLevel"))
         $('#modal_point_detail_disaster_type').text(target.properties.get("disasterType"))
         $('#modal_point_detail_translated_disaster_type').text(target.properties.get("translatedDisasterType"))
+
         // $('#modal_point_detail_is_verified').text(target.properties.get("is_verified"))
-        $('#modal_point_detail_is_verified').text(is_verified_display)
+        $('#modal_point_detail_is_verified').text(is_verified_label)
+        $('#modal_point_detail_is_verified').css(is_verified_style[0], is_verified_style[1])
+
         // $('#modal_point_detail_created_at').text(target.properties.get("createdAt")) // TODO to footer
         $('#modal_point_detail_created_at').text(createdTime) // TODO to footer
         $('#modal_point_detail_created_by').text(target.properties.get("createdBy")) // TODO to footer

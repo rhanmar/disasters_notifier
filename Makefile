@@ -8,7 +8,7 @@ down:
 	docker-compose down
 
 attach:
-	docker attach docker attach disasters_notifier_web_1
+	docker attach disasters_notifier_web_1
 
 tests:
 	docker exec -it disasters_notifier_web_1 python ./manage.py test

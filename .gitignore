@@ -45,6 +45,7 @@ start.bat
 supervisord.log
 supervisord.pid
 .tmp/
+.env
 
 cert.crt
 cert.key

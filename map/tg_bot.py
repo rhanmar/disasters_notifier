@@ -4,8 +4,9 @@ from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHandler
 from users.models import User
+import os
 
-TOKEN = "1932808440:AAEq_BLBIUtGrBMBa8tznQulhzapPdElVd4"
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 updater = Updater(token=TOKEN, use_context=True)
 
 dispatcher = updater.dispatcher

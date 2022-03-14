@@ -21,6 +21,8 @@ services:
     tty: true # for ipdb
     depends_on:
       - db
+    env_file:
+      - .env
 
   # #################################################################
   # Database (PostgreSQL)

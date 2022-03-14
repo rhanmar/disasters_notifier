@@ -12,9 +12,10 @@ from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHa
 from users.models import User
 import requests
 from rest_framework.authtoken.models import Token
+import os
+from map.models import DisasterTypes
 
-
-TOKEN = "1932808440:AAEq_BLBIUtGrBMBa8tznQulhzapPdElVd4"
+TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 updater = Updater(token=TOKEN, use_context=True)
 
 dispatcher = updater.dispatcher
@@ -25,8 +26,15 @@ logging.basicConfig(
 )
 
 LOCATION_COORDS, LOCATION_NAME, DISASTER_TYPE, DISASTER_LEVEL = range(4)
-DISASTER_LEVELS = [['1', '2', '3', '4', '5']]
-DISASTER_TYPES = [['fire', 'water', 'geo', 'meteo']]
+DISASTER_LEVELS = ['0', '1', '2', '3', '4', '5']
+DISASTER_TYPES_info = list(DisasterTypes.RESOLVER.values())
+DISASTER_TYPES = [
+    [DISASTER_TYPES_info[0]],
+    [DISASTER_TYPES_info[1]],
+    [DISASTER_TYPES_info[2]],
+    [DISASTER_TYPES_info[3]],
+    [DISASTER_TYPES_info[4]],
+]
 
 
 def send_data_to_service(data):
@@ -43,15 +51,15 @@ def send_data_to_service(data):
 
     token = Token.objects.get(user=user).key
 
-    data = {
+    sending_info = {
         'name': data['name'],
         'coordinates': f"{data['latitude']},{data['longitude']}",
-        'disaster_type': data['disaster_type'],
+        'disaster_type': DisasterTypes.TRANSLATOR[data['disaster_type']],
         'disaster_level': data['disaster_level'],
     }
     response = requests.post(
         'http://127.0.0.1:8000/api/points/',  # TODO change to reverse.  example: reverse('point-list'),
-        json=data,
+        json=sending_info,
         headers={'Authorization': f"token {token}"},
     )
     print(response.status_code)
@@ -64,10 +72,10 @@ def send_data_to_service(data):
 
 def sign_up(update: Update, context: CallbackContext):
     update.message.reply_text("Добро пожаловать в диалог с DisasterNotifierBot!")
-    update.message.reply_text(f"Для регистрации перейдите по ссылке: {'http://127.0.0.1:8000/'}.")
+    update.message.reply_text(f"Для регистрации перейдите по ссылке: {'http://127.0.0.1:8000/'}.")  # TODO to reverse
 
 
-def link_tg_acc_to_service(user_id, telegram_id):  # TODO think about name
+def link_tg_acc_to_service(user_id: str, telegram_id: int) -> None:  # TODO think about name
     user = User.objects.filter(id=user_id)
     if user.exists():
         user = user.first()
@@ -81,7 +89,6 @@ def cancel(update: Update, context: CallbackContext) -> int:
         f'Выход из диалога. До свидания, {user.first_name} {user.last_name}!',
         reply_markup=ReplyKeyboardRemove(),
     )
-    # update.message.reply_text('Bye form cancel.')
     return ConversationHandler.END
 
 
@@ -91,9 +98,19 @@ def start(update: Update, context: CallbackContext):
     if len(message_text) > 1:
         link_tg_acc_to_service(message_text[1], update.message.from_user.id)
         update.message.reply_text("Ваш Телеграм-аккаунт успешно привязан с DisasterNotifier!")
+
+    user = update.message.from_user
+    user_search = User.objects.filter(telegram_id=user.id)
+    if not user_search.exists():
+        update.message.reply_text("Ваш необходимо привязать ваш Телеграм-аккаунт к аккаунту сервиса. "
+                                  "Для этого введите /signup")
+        return ConversationHandler.END
+
     update.message.reply_text("Отправьте своё местоположение или введите /cancel для выхода.")
     return 1
 
+
+# button1 = KeyboardButton('fefe')
 
 def send_location(update: Update, context: CallbackContext):
     update.message.reply_text("Местоположение получено.")
@@ -104,7 +121,10 @@ def send_location(update: Update, context: CallbackContext):
     update.message.reply_text(
         'Введите тип ЧП:',
         reply_markup=ReplyKeyboardMarkup(
-            DISASTER_TYPES, one_time_keyboard=True,  # input_field_placeholder='HEHEHE?'
+            DISASTER_TYPES,
+            # DISASTER_TYPES[5],
+            # DISASTER_TYPES,
+            one_time_keyboard=True,
         ),
     )
     return 2

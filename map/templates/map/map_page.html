@@ -66,51 +66,70 @@
       <div class="modal-body">
 
 
-          <div class="modal_detail_form_label">
-              Название:
+          <div>
+              <p class="modal_detail_form_label">Название:</p>
               <p id="modal_point_detail_name" class="modal_detail_form_field"></p>
           </div>
 
-          <div class="modal_detail_form_label">
-            Описание:
+          <div>
+            <p class="modal_detail_form_label">Описание:</p>
             <p id="modal_point_detail_description" class="modal_detail_form_field"></p>
           </div>
+
           <!-- ID: --> <p id="modal_point_detail_id" hidden></p>
-          <div class="modal_detail_form_label">
-            Уровень опасности:
+
+          <div>
+            <p class="modal_detail_form_label">Уровень опасности:</p>
             <p id="modal_point_detail_disaster_level" class="modal_detail_form_field"></p>
           </div>
 
-          <div class="modal_detail_form_label">
-              Тип стихийного бедствия:
+          <div>
+              <p class="modal_detail_form_label">Тип стихийного бедствия:</p>
               <p id="modal_point_detail_translated_disaster_type" class="modal_detail_form_field"></p>
           </div>
 
-          <div class="modal_detail_form_label">
-              Подтверждено ли:
-              <p id="modal_point_detail_is_verified" class="modal_detail_form_field"></p>
-          </div>
 
-          <div class="modal_detail_form_label">
-              Создано:
-              <p id="modal_point_detail_created_at" class="modal_detail_form_field"></p>
-          </div>
 
-          <div class="modal_detail_form_label">
-              Последнее изменение:
-              <p id="modal_point_detail_modified_at" class="modal_detail_form_field"></p>
-          </div>
+{#          <div class="modal_detail_form_label">#}
+{#              Автор:#}
+{#              <p id="modal_point_detail_created_by" class="modal_detail_form_field"></p>#}
+{#          </div>#}
 
-          <div class="modal_detail_form_label">
-              Автор:
-              <p id="modal_point_detail_created_by" class="modal_detail_form_field"></p>
-          </div>
+
 
 
 {#          Created by ID: <p id="modal_point_detail_created_by_id"></p>#}
 
 
       </div>
+
+        <div id="modal_form_footer">
+{#              <div class="modal_detail_form_label">#}
+            <i>
+                Создано:
+                <span id="modal_point_detail_created_at"></span>
+            </i>
+
+{#          </div>#}
+
+{#          <div class="modal_detail_form_label">#}
+            <br>
+            <i>
+                Последнее изменение:
+                <span id="modal_point_detail_modified_at"></span>
+            </i>
+            <br>
+
+{#          </div>#}
+
+{#          <div class="modal_detail_form_verification_label">#}
+              <i>
+                  <span id="modal_point_detail_is_verified"></span>
+              </i>
+{#          </div>#}
+
+        </div>
+
       <div class="modal-footer">
 {#          {% if user.id in user.created_by.values_list 'id' %}#}
 {#            ????HUHU#}

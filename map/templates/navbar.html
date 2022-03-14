@@ -12,8 +12,17 @@
 <!--      </li>-->
 
 
+    {% if not user.has_telegram_account %}
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'link_to_telegram' %}" tabindex="-1" aria-disabled="true">Привязать к Телеграм</a>
+        </li>
+    {% endif %}
 
-
+    {% if not user.is_superadmin %}
+        <li class="nav-item active">
+            <a class="nav-link" href="{% url 'admin:index' %}" tabindex="-1" aria-disabled="true">Админ</a>
+        </li>
+    {% endif %}
 
       <li class="nav-item">
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Документация</a>
@@ -25,6 +34,11 @@
 
     </ul>
     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li>
+            <p class="nav-link ms-auto" id="navbar_current_username">
+                {{ user.username }}
+            </p>
+        </li>
         <li>
             <a class="nav-link ms-auto" href="{% url 'logout' %}">Logout<span class="sr-only">(current)</span></a>
         </li>

@@ -4,6 +4,7 @@ from map.models import Point
 from map.api import serializers
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission
 from django_filters.rest_framework import DjangoFilterBackend
+from map.utils.telegram import send_message_about_verification_to_channel
 
 
 class IsPointOwnerOrSuperuser(BasePermission):  # TODO move to permissions dir
@@ -61,4 +62,13 @@ class PointViewSet(viewsets.ModelViewSet):
     #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
+        if serializer.validated_data.get('is_verified'):
+            send_message_about_verification_to_channel('create')
         serializer.save(created_by=self.request.user)
+
+    def perform_update(self, serializer):
+        before_update = self.get_object().is_verified
+        after_update = serializer.validated_data['is_verified']
+        if before_update is False and after_update is True:
+            send_message_about_verification_to_channel('update')
+        serializer.save()
