@@ -1,29 +1,16 @@
-from django.core.management.base import BaseCommand
-from django.urls import reverse
-from django.utils import timezone
-import datetime
-
-from telegram.ext import Updater
-import logging
-from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
-from users.models import User
-from telegram.ext import CallbackContext
-from telegram.ext import CommandHandler, MessageHandler, Filters, ConversationHandler
-from users.models import User
-import requests
-from rest_framework.authtoken.models import Token
 import os
-from map.models import DisasterTypes
+
+from django.core.management.base import BaseCommand
+from map.models import DisasterTypes, Point
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
+from telegram.ext import (CallbackContext, CommandHandler, ConversationHandler,
+                          Filters, MessageHandler, Updater)
+from users.models import User
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 updater = Updater(token=TOKEN, use_context=True)
-
 dispatcher = updater.dispatcher
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
 
 LOCATION_COORDS, LOCATION_NAME, DISASTER_TYPE, DISASTER_LEVEL = range(4)
 DISASTER_LEVELS = ['0', '1', '2', '3', '4', '5']
@@ -37,37 +24,18 @@ DISASTER_TYPES = [
 ]
 
 
-def send_data_to_service(data):
-    data['name'] = 'from Telegram Bot.'
-    print('!!!!')
-    print(data)
-    import ipdb; ipdb.set_trace()
-    # TODO: get token, create request
-    user = User.objects.filter(telegram_id=data['user'].id)
-    if user.exists():
-        user = user.first()
-    else:
-        return ConversationHandler.END
-
-    token = Token.objects.get(user=user).key
-
-    sending_info = {
-        'name': data['name'],
-        'coordinates': f"{data['latitude']},{data['longitude']}",
-        'disaster_type': DisasterTypes.TRANSLATOR[data['disaster_type']],
-        'disaster_level': data['disaster_level'],
-    }
-    response = requests.post(
-        'http://127.0.0.1:8000/api/points/',  # TODO change to reverse.  example: reverse('point-list'),
-        json=sending_info,
-        headers={'Authorization': f"token {token}"},
-    )
-    print(response.status_code)
-    print(response.text)
-    print(response.content)
-    import ipdb; ipdb.set_trace()
-    # return ConversationHandler.END
-
+def send_data_to_service(data: dict) -> None:
+    try:
+        Point.objects.create(
+            name=data['name'],
+            description=data['description'],
+            coordinates=f"{data['latitude']},{data['longitude']}",
+            disaster_type=DisasterTypes.TRANSLATOR[data['disaster_type']],
+            disaster_level=data['disaster_level'],
+            created_by=data['user'],
+        )
+    except Exception:
+        pass
 
 
 def sign_up(update: Update, context: CallbackContext):
@@ -92,7 +60,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END
 
 
-def start(update: Update, context: CallbackContext):
+def start(update: Update, context: CallbackContext) -> int:
     update.message.reply_text("Добро пожаловать в диалог с DisasterNotifierBot!")
     message_text = update.message.text.split()
     if len(message_text) > 1:
@@ -106,13 +74,28 @@ def start(update: Update, context: CallbackContext):
                                   "Для этого введите /signup")
         return ConversationHandler.END
 
-    update.message.reply_text("Отправьте своё местоположение или введите /cancel для выхода.")
+    context.user_data['user'] = user_search.first()
+    update.message.reply_text("Укажите краткое название точки или введитите /cancel для выхода.")
     return 1
 
 
-# button1 = KeyboardButton('fefe')
+def get_point_name(update: Update, context: CallbackContext) -> int:
+    update.message.reply_text('Краткое название получено.')
+    point_name = update.message.text
+    context.user_data['name'] = point_name
+    update.message.reply_text('Опишите событие.')
+    return 2
 
-def send_location(update: Update, context: CallbackContext):
+
+def get_point_description(update: Update, context: CallbackContext) -> int:
+    update.message.reply_text('Описание события получено.')
+    point_description = update.message.text
+    context.user_data['description'] = point_description
+    update.message.reply_text("Отправьте своё местоположение.")
+    return 3
+
+
+def get_location(update: Update, context: CallbackContext) -> int:
     update.message.reply_text("Местоположение получено.")
     latitude = update.message.location.latitude
     longitude = update.message.location.longitude
@@ -122,35 +105,30 @@ def send_location(update: Update, context: CallbackContext):
         'Введите тип ЧП:',
         reply_markup=ReplyKeyboardMarkup(
             DISASTER_TYPES,
-            # DISASTER_TYPES[5],
-            # DISASTER_TYPES,
             one_time_keyboard=True,
         ),
     )
-    return 2
+    return 4
 
 
-def send_disaster_type(update: Update, context: CallbackContext) -> int:
+def get_disaster_type(update: Update, context: CallbackContext) -> int:
     update.message.reply_text('Тип ЧП получен.')
     disaster_type = update.message.text
     context.user_data['disaster_type'] = disaster_type
-    # context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
-
     update.message.reply_text(
         'Введите уровень опасности ЧП:',
         reply_markup=ReplyKeyboardMarkup(
-            DISASTER_LEVELS, one_time_keyboard=True,  # input_field_placeholder='HEHEHE?'
+            DISASTER_LEVELS, one_time_keyboard=True,
         ),
     )
-    return 3
+    return 5
 
 
-def send_disaster_level(update: Update, context: CallbackContext) -> int:
+def get_disaster_level(update: Update, context: CallbackContext) -> int:
     update.message.reply_text('Уровень опасности ЧП получен.')
     disaster_level = update.message.text
     user = update.message.from_user
     context.user_data['disaster_level'] = disaster_level
-    context.user_data['user'] = user
     update.message.reply_text(
         f'Спасибо за вашу заботу, {user.first_name} {user.last_name}!',
         reply_markup=ReplyKeyboardRemove()
@@ -163,18 +141,18 @@ def send_disaster_level(update: Update, context: CallbackContext) -> int:
 conv_add_location_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
     states={
-        1: [MessageHandler(Filters.location, send_location)],
-        # 2: [MessageHandler(Filters.text & ~Filters.command, send_location_name)],
-        2: [MessageHandler(Filters.text & ~Filters.command, send_disaster_type)],
-        3: [MessageHandler(Filters.text & ~Filters.command, send_disaster_level)],
+        1: [MessageHandler(Filters.text, get_point_name)], # 4
+        2: [MessageHandler(Filters.text, get_point_description)], # 5
+        3: [MessageHandler(Filters.location, get_location)], # 1
+        4: [MessageHandler(Filters.text & ~Filters.command, get_disaster_type)], # 2
+        5: [MessageHandler(Filters.text & ~Filters.command, get_disaster_level)], # 3
+
     },
     fallbacks=[CommandHandler('cancel', cancel)],
 )
-# start_handler = CommandHandler('start', start) no need because in conv  # TODO remove later
 signup_handler = CommandHandler('signup', sign_up)
 
 # DISPATCHERS
-# dispatcher.add_handler(start_handler)  no need because in conv # TODO remove later
 dispatcher.add_handler(conv_add_location_handler)
 dispatcher.add_handler(signup_handler)
 
@@ -187,7 +165,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         print('Stop Telegram Bot.')
-        # time = timezone.now().strftime('%X')
-        # self.stdout.write("It's now %s" % time)
-        # print(datetime.datetime.now())
-        # print(User.objects.all())
