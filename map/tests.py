@@ -1,9 +1,9 @@
 from django.test import Client, TestCase
 from django.urls import reverse
 from rest_framework import status
+from users.factories import UserFactory
 
 from map.models import Point
-from users.factories import UserFactory
 
 
 class PointTest(TestCase):

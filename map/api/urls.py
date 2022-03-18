@@ -1,4 +1,5 @@
 from rest_framework import routers
+
 from map.api.views import PointViewSet
 
 router = routers.DefaultRouter()

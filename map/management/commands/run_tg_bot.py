@@ -1,11 +1,12 @@
 import os
 
 from django.core.management.base import BaseCommand
-from map.models import DisasterTypes, Point
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (CallbackContext, CommandHandler, ConversationHandler,
                           Filters, MessageHandler, Updater)
 from users.models import User
+
+from map.models import DisasterTypes, Point
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 updater = Updater(token=TOKEN, use_context=True)
@@ -141,11 +142,11 @@ def get_disaster_level(update: Update, context: CallbackContext) -> int:
 conv_add_location_handler = ConversationHandler(
     entry_points=[CommandHandler('start', start)],
     states={
-        1: [MessageHandler(Filters.text, get_point_name)], # 4
-        2: [MessageHandler(Filters.text, get_point_description)], # 5
-        3: [MessageHandler(Filters.location, get_location)], # 1
-        4: [MessageHandler(Filters.text & ~Filters.command, get_disaster_type)], # 2
-        5: [MessageHandler(Filters.text & ~Filters.command, get_disaster_level)], # 3
+        1: [MessageHandler(Filters.text & ~Filters.command, get_point_name)],
+        2: [MessageHandler(Filters.text & ~Filters.command, get_point_description)],
+        3: [MessageHandler(Filters.location, get_location)],
+        4: [MessageHandler(Filters.text & ~Filters.command, get_disaster_type)],
+        5: [MessageHandler(Filters.text & ~Filters.command, get_disaster_level)],
 
     },
     fallbacks=[CommandHandler('cancel', cancel)],

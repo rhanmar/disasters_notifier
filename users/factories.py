@@ -5,6 +5,7 @@ from users.models import User
 
 
 class UserFactory(factory.django.DjangoModelFactory):
+    """Factory for creating new User."""
     class Meta:
         model = User
 
@@ -12,6 +13,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 
 class PointFactory(factory.django.DjangoModelFactory):
+    """Factory for creating new Point."""
     class Meta:
         model = Point
 

@@ -1,9 +1,11 @@
 import rest_framework.permissions
-from rest_framework import viewsets
-from map.models import Point
-from map.api import serializers
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import viewsets
+from rest_framework.permissions import (BasePermission, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+
+from map.api import serializers
+from map.models import Point
 from map.utils.telegram import send_message_about_verification
 
 

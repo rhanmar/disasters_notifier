@@ -1,36 +1,36 @@
 from django.db import models
-from users.models import User
 from django.utils.translation import gettext as _
+from users.models import User
 
 
 class DisasterTypes:
-     FIRE = "FIRE"
-     WATER = "WATER"
-     GEO = "GEO"
-     METEO = "METEO"
-     UNKNOWN = "UNKNOWN"
+    """Constants for Disaster Types."""
+    FIRE = "FIRE"
+    WATER = "WATER"
+    GEO = "GEO"
+    METEO = "METEO"
+    UNKNOWN = "UNKNOWN"
 
-     RESOLVER = {
+    RESOLVER = {
         FIRE: _("Пожар"),
         WATER: _("Гидрологический характер"),
         GEO: _("Геологический характер"),
         METEO: _("Метеорологический характер"),
         UNKNOWN: _("Неизвестно"),
-     }
+    }
 
-     TRANSLATOR = {
-         "Пожар": FIRE,
-         "Гидрологический характер": WATER,
-         "Геологический характер": GEO,
-         "Метеорологический характер": METEO,
-         "Неизвестно": UNKNOWN,
-
-     }
-     CHOICES = RESOLVER.items()
+    TRANSLATOR = {
+        "Пожар": FIRE,
+        "Гидрологический характер": WATER,
+        "Геологический характер": GEO,
+        "Метеорологический характер": METEO,
+        "Неизвестно": UNKNOWN,
+    }
+    CHOICES = RESOLVER.items()
 
 
 class TimestampedMixin(models.Model):
-    """TODO"""
+    """Mixin for Creating and Updating timestamps."""
     created_at = models.DateTimeField(
         verbose_name=_('Дата создания'),
         auto_now_add=True,
@@ -48,7 +48,6 @@ class Point(TimestampedMixin, models.Model):
     """Model for map Point"""
 
     DISASTER_LEVELS = [(0, 0), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5)]
-    # DISASTER_TYPES = [("fire", "fire"), ("water", "water"), ("geo", "geo"), ("meteo", "meteo")]
 
     name = models.CharField(
         verbose_name=_('Наименование точки'),
@@ -63,8 +62,6 @@ class Point(TimestampedMixin, models.Model):
         verbose_name=_("Коордиаты точки"),
         max_length=80
     )
-    # created_at = models.DateTimeField(auto_now_add=True)
-    # modified_at = models.DateTimeField(auto_now=True)
     is_verified = models.BooleanField(
        verbose_name=_("Подтверждена ли точка"),
         default=False,
@@ -91,14 +88,14 @@ class Point(TimestampedMixin, models.Model):
     )
 
     @property
-    def get_translated_disaster_type(self):
+    def get_translated_disaster_type(self) -> str:
         return DisasterTypes.RESOLVER[self.disaster_type]
 
     @property
-    def get_translated_is_verified(self):
+    def get_translated_is_verified(self) -> str:
         if self.is_verified:
             return "Подтверждено"
         return  "Не подтверждено"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.name} - {self.disaster_type} - {self.disaster_level} - {self.is_verified}"

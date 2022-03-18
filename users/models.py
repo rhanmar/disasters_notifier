@@ -6,6 +6,7 @@ from django.template.defaultfilters import slugify
 
 
 class User(AbstractUser):
+    """Model for User."""
 
     telegram_id = models.CharField(
         max_length=128,
@@ -13,13 +14,13 @@ class User(AbstractUser):
     )
 
     @property
-    def has_telegram_account(self):
+    def has_telegram_account(self) -> bool:
         if self.telegram_id:
             return True
         return False
 
     @property
-    def get_slug(self):
+    def get_slug(self) -> str:
         data = list()
         data.append(str(self.pk))
         if self.username:
@@ -29,7 +30,6 @@ class User(AbstractUser):
         if self.last_name:
             data.append(self.last_name)
         return slugify(' '.join(data))
-
 
 
 post_save.connect(generate_token_for_new_user, User)

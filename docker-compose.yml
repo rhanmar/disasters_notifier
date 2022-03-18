@@ -37,3 +37,25 @@ services:
       - POSTGRES_NAME=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+
+  # #################################################################
+  # Telegram Bot
+  # #################################################################
+  telegram_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py run_tg_bot
+    volumes:
+      - .:/app
+    environment:
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    stdin_open: true # for ipdb
+    tty: true # for ipdb
+    depends_on:
+      - db
+#      - web
+    env_file:
+      - .env

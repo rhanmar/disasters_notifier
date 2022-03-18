@@ -1,8 +1,9 @@
-from telegram.ext import ExtBot
 import os
-from map.models import Point
 from datetime import datetime
 
+from telegram.ext import ExtBot
+
+from map.models import Point
 
 ACTION_RESOLVER = {
     "create": "Добавлена новая подтверждённая точка.",
